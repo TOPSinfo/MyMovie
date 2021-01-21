@@ -32,6 +32,7 @@ const MyMovieList = ({ movieData = [] }) => {
                     return !item.watched
                 }
             })
+            console.log(myMovieData)
             return myMovieData
         }
     }
@@ -40,11 +41,16 @@ const MyMovieList = ({ movieData = [] }) => {
         setMovies(checkData(movieData))
     }, [movieData, selectedTab])
 
-    async function toggleCheck(index) {
-        var tempMovie = [...movies]
-        tempMovie[index].watched = !tempMovie[index].watched
-        await AsyncStorage.setItem('movieData', JSON.stringify(tempMovie))
-        setMovies(checkData(tempMovie))
+    async function toggleCheck(index,id) {
+        var tempMovie = [...movieData]
+        var myMovieChoice = tempMovie.filter((item) => {
+            if (item.id == id) {
+                item['watched'] = !item['watched']
+            }
+            return item
+        })
+        await AsyncStorage.setItem('movieData', JSON.stringify(myMovieChoice))
+        setMovies(checkData(myMovieChoice))
     }
     function openAccordian(id) {
         if (openID == id) {
@@ -68,7 +74,8 @@ const MyMovieList = ({ movieData = [] }) => {
                             <Text style={styles.textTitle}>Release: {item.release_date}</Text>
                             <Text style={styles.textTitle}>IMDB Score:{item.popularity}</Text>
                             <View style={{ flexDirection: 'row', marginTop: 6 }}>
-                                <Text style={{ color: '#31404D', fontWeight: 'bold' }}>Watched:</Text><CheckBox color={item.watched ? '#6062D7' : 'lightgrey'} checked={item.watched} onPress={() => toggleCheck(index)} />
+                                <Text style={{ color: '#31404D', fontWeight: 'bold' }}>Watched:</Text>
+                                <CheckBox color={item.watched ? '#6062D7' : 'lightgrey'} checked={item.watched} onPress={() => toggleCheck(index,item.id)} />
                             </View>
                         </View>
                     </View> : null
